@@ -26,7 +26,7 @@ bot.on('message', function(msg) {
     return;
   }
   if(msg.content === prefix + "help"){
-    msg.channel.send("Type s?character <character> or s?dragon <dragon> accordingly")
+    msg.channel.send("Type s?character <character>, s?dragon <dragon>, or s?wyrm <wyrmprint> accordingly")
     return;
   }
   if(command.includes("sierra")){
@@ -48,7 +48,8 @@ bot.on('message', function(msg) {
     }
   }
   if(command.includes("wyrm")){
-    const nochar = msg.content.slice(7);
+    var nochar = msg.content.slice(7);
+    nochar = nochar.replace(" ", "_")
   if(command != ''){
       wyrm(msg, nochar)
       return;
@@ -75,6 +76,15 @@ rp(options)
     var value = []
     var stat = []
     var a = ''
+    var p = []
+    $('p').each(function(i, elem) {
+        console.log($(this).text())
+        p[i] = $(this).text();
+    });
+    if(p[0] == "There is currently no text in this page."){
+      msg.channel.send('Could not find dragon: ' + h + ' (Note: wyrmprints are case sensitive)' )
+      return;
+    }
     $('.dt-term').each(function(i, elem) {
         value[i] = $(this).text();
     });
@@ -93,7 +103,6 @@ rp(options)
     } else {
       msg.channel.send('Could not find stat data for: ' + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
     }
-    console.log(a)
   })
   .catch((err) => {
     console.log(err);
@@ -118,6 +127,14 @@ rp(options)
     var value2 = []
     var stat = []
     var a = ''
+    var p = []
+    $('p').each(function(i, elem) {
+        p[i] = $(this).text();
+    });
+    if(p[0] == "There is currently no text in this page."){
+      msg.channel.send('Could not find character: ' + h + ' (Note: wyrmprints are case sensitive)' )
+      return;
+    }
     //$('.dt-term').each(function(i, elem) {
         //value[i] = $(this).text();
     //});
@@ -167,7 +184,6 @@ rp(options)
     } else {
       msg.channel.send('Could not find stat data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
     }
-    console.log(a)
   })
   .catch((err) => {
     console.log(err);
@@ -189,6 +205,8 @@ rp(options)
   .then(($) => {
     var value = []
     var value1 = []
+    var value2 = []
+    var value3 = []
     var stat = []
     var a = ''
     $('.dt-term').each(function(i, elem) {
@@ -212,12 +230,20 @@ rp(options)
     for(var i = 2; i < value.length; i++){
         a = a + ' \n' + value[i] + ': ' + stat[i];
     }
+    $('table').each(function(i, elem){
+        value2[i] = parsenotevent($(this).html()) + ':';
+        //value3[i] = console.log($(this).html().replace(" ", ""));//parsesability($(this).html()));
+        value3[i] = parsesability($(this).html());
+    })
+    a = a + ' \n\n' + '**Abilities**'
+    for(var i = 0; i < value2.length; i++){
+      a = a + ' \n' + value2[i] + '\n' + value3[i];
+    }
     if(a != ''){
-      msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + ' \n' + a);
+      msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + ' \n' + ' \n' + '**Stats**' + a);
     } else {
       msg.channel.send('Could not find stat data for: ' + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
     }
-    console.log(a)
   })
   .catch((err) => {
     console.log(err);
@@ -260,4 +286,12 @@ function parsewyrm(param){
   var regex = /(.*)href=\"\/(\S*)\"(.*)/i
   let matches = param.match(regex)
   return matches[2];
+}
+
+function parsesability(param){
+  var regex = /(.*)\<p\>((\w*\d*[%\.]* )*)(.*)Might\:\<\/span\> (\d*)(.*)/i//((.|\n)*)(.*)(\S*)/s//((\w*\d*[%\.]* )*)(.*)Might\:\<\/span\> (\d*)(.*)/i//(\S+ )*\. (.*) Might\: <\/span> (\d+)(.*)/i
+  var regex1 = /(.*)\<p\>((\w*\d*[%\.]* )*)(.*)Might\:\<\/span\> (\d*)(.*)/s
+  let matches1 = param.match(regex)
+  let matches2 = param.match(regex1)
+  return 'Level 1: ' + matches1[2] + '(Might: ' + matches1[5] + ')' + '\n' + 'Level 2: ' + matches2[2] + '(Might: ' + matches2[5] + ')';
 }
