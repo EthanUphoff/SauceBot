@@ -153,7 +153,7 @@ rp(options)
     }
   })
   .catch((err) => {
-    console.log(err);
+    msg.channel.send('Could not find skill data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
   });
 
 //return 'Data not found';
@@ -648,7 +648,7 @@ rp(options)
     }
   })
   .catch((err) => {
-    console.log(err);
+    msg.channel.send('Could not find skill data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
   });
 
 //return 'Data not found';
