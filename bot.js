@@ -34,14 +34,16 @@ bot.on('message', function(msg) {
     return;
   }
   if(command.includes("dragon")){
-  const nodragon = msg.content.slice(9);
+    var nodragon = msg.content.slice(9);
+    nodragon = nodragon.replace(" ", "_")
   if(command != ''){
       dragon(msg, nodragon)
       return;
     }
   }
   if(command.includes("character")){
-    const nochar = msg.content.slice(11);
+    var nochar = msg.content.slice(11);
+    nochar = nochar.replace(" ", "_")
   if(command != ''){
       characters(msg, nochar)
       return;
@@ -81,10 +83,6 @@ rp(options)
         console.log($(this).text())
         p[i] = $(this).text();
     });
-    if(p[0] == "There is currently no text in this page."){
-      msg.channel.send('Could not find dragon: ' + h + ' (Note: wyrmprints are case sensitive)' )
-      return;
-    }
     $('.dt-term').each(function(i, elem) {
         value[i] = $(this).text();
     });
