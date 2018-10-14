@@ -42,8 +42,7 @@ bot.on('message', function(msg) {
     }
   }
   if(command.includes("character")){
-    var nochar = msg.content.slice(11);
-    nochar = nochar.replace(" ", "_")
+    var nochar = msg.content.slice(12);
   if(command != ''){
       characters(msg, nochar)
       return;
@@ -76,11 +75,13 @@ const options = {
 rp(options)
   .then(($) => {
     var value = []
+    var value2 = []
+    var value3 = []
     var stat = []
     var a = ''
     var p = []
     $('p').each(function(i, elem) {
-        console.log($(this).text())
+        //console.log($(this).text())
         p[i] = $(this).text();
     });
     $('.dt-term').each(function(i, elem) {
@@ -93,9 +94,22 @@ rp(options)
         stat[i] = parseit($(this).html());
       }
     });
-    for(var i = 0; i < value.length; i++){
+    $('table').each(function(i, elem){
+        value2[i] = parsedragon($(this).html())// + ':';
+        //value3[i] = console.log($(this).html().replace(" ", ""));//parsesability($(this).html()));
+        value3[i] = parsedragonability($(this).html());
+    })
+    //a = a + ' \n\n' + '**Abilities**'
+    //for(var i = 0; i < value2.length; i++){
+      //a = a + ' \n' + value2[i] + '\n' + value3[i];
+    //}
+    for(var i = 1; i < value.length; i++){
         a = a + ' \n' + value[i] + ': ' + stat[i];
     }
+    a = a + ' \n\n' + '**Skills**'
+    a = a + ' \n' + value2[0] + '\n' + value3[0];
+    a = a + ' \n\n' + '**Abilities**'
+    a = a + ' \n' + value2[0] + '\n' + value3[0];
     if(a != ''){
       msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + ' \n' + a);
     } else {
@@ -229,7 +243,7 @@ rp(options)
         a = a + ' \n' + value[i] + ': ' + stat[i];
     }
     $('table').each(function(i, elem){
-        value2[i] = parsewyrm($(this).html().replace('/em', '/a')) + ':';
+        value2[i] = parsewyrm($(this).html().replace('/em', '/a'))// + ':';
         //value3[i] = console.log($(this).html().replace(" ", ""));//parsesability($(this).html()));
         value3[i] = parsesability($(this).html());
     })
@@ -284,6 +298,22 @@ function parsewyrm(param){
   var regex = /(.*)\>((\w*\d*[%\.]* \w*)*)\<\/(.*)/i
   let matches = param.match(regex)
   return matches[2];
+}
+
+function parsedragon(param){
+  var regex = /(.*)\>(.*)\<\/a(.*)/i
+  let matches = param.match(regex)
+  return matches[2];
+}
+
+function parsedragonability(param){
+  var regex1 = /\<p\>(.*) \((.*)Might(.*) (\d*)\)(.*)\<p\>(.*) \((.*)Might(.*) (\d*)\)(.*)/s
+  //var regex = /(.*)\<p\>(.*) \((.*)Might\:\<\/span\> (\d*)(.*)/i
+  var regex = /\<p\>(.*) \((.*)Might(.*) (\d*)\)(.*)/i
+  let matches1 = param.match(regex)
+  //return matches1[1];
+  let matches2 = param.match(regex1)
+  return 'Level 1: ' + matches1[1] + ' (Might: ' + matches1[4] + ')' + '\n' + 'Level 2: ' + matches2[6] + ' (Might: ' + matches2[9] + ')';
 }
 
 function parsesability(param){
