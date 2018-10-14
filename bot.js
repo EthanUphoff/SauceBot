@@ -6,7 +6,7 @@ let axios = require('axios');
 
 var prefix = "s?"
 
-bot.login('NTAwODU1Mjk4MDI2NzY2MzQ2.DqQ5jQ.3E3AeUiDB8o1rLVF4EXo0jTC4NA')
+bot.login('')
 
 bot.on('ready', function(){
   console.log('The bot is online!')
@@ -109,9 +109,9 @@ rp(options)
     a = a + ' \n\n' + '**Skills**'
     a = a + ' \n' + value2[0] + '\n' + value3[0];
     a = a + ' \n\n' + '**Abilities**'
-    a = a + ' \n' + value2[0] + '\n' + value3[0];
+    a = a + ' \n' + value2[1] + '\n' + value3[1];
     if(a != ''){
-      msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + ' \n' + a);
+      msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + ' \n\n' + '**Stats**' + a);
     } else {
       msg.channel.send('Could not find stat data for: ' + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
     }
@@ -192,7 +192,7 @@ rp(options)
         a = a + ' \n' + value1[i] + ': ' + stat[i];
     }
     if(a != ''){
-      msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + ' \n' + a);
+      msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + ' \n\n' + '**Stats**' + a);
     } else {
       msg.channel.send('Could not find stat data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
     }
@@ -303,7 +303,7 @@ function parsewyrm(param){
 function parsedragon(param){
   var regex = /(.*)\>(.*)\<\/a(.*)/i
   let matches = param.match(regex)
-  return matches[2];
+  return matches[2].replace('&amp;', '&');
 }
 
 function parsedragonability(param){
@@ -313,7 +313,7 @@ function parsedragonability(param){
   let matches1 = param.match(regex)
   //return matches1[1];
   let matches2 = param.match(regex1)
-  return 'Level 1: ' + matches1[1] + ' (Might: ' + matches1[4] + ')' + '\n' + 'Level 2: ' + matches2[6] + ' (Might: ' + matches2[9] + ')';
+  return 'Level 1: ' + matches1[1].replace('&apos;', '\'') + ' (Might: ' + matches1[4] + ')' + '\n' + 'Level 2: ' + matches2[6].replace('&apos;', '\'') + ' (Might: ' + matches2[9] + ')';
 }
 
 function parsesability(param){
