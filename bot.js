@@ -47,6 +47,13 @@ bot.on('message', function(msg) {
       return;
     }
   }
+  if(command.includes("wyrm")){
+    const nochar = msg.content.slice(7);
+  if(command != ''){
+      wyrm(msg, nochar)
+      return;
+    }
+  }
   if(command == "ragutesting"){
     console.log(parseclass('<div style="margin:-2px 0 0 1px"><img alt="Icon Type Row Attack.png" src="https://d1u5p3l4wpay3k.cloudfront.net/dragalialost_gamepedia_en/thumb/8/85/Icon_Type_Row_Attack.png/105px-Icon_Type_Row_Attack.png?version=34836f95c6ba41ceec9cb8d9c6fc5b50" width="105" height="21" srcset="https://d1u5p3l4wpay3k.cloudfront.net/dragalialost_gamepedia_en/8/85/Icon_Type_Row_Attack.png?version=34836f95c6ba41ceec9cb8d9c6fc5b50 1.5x"></div>'));
     return;
@@ -169,6 +176,56 @@ rp(options)
 //return 'Data not found';
 }
 
+function wyrm(msg, h){
+
+const options = {
+  uri: `https://dragalialost.gamepedia.com/` + h,
+  transform: function (body) {
+    return cheerio.load(body);
+  }
+};
+
+rp(options)
+  .then(($) => {
+    var value = []
+    var value1 = []
+    var stat = []
+    var a = ''
+    $('.dt-term').each(function(i, elem) {
+        value[i] = $(this).text();
+    });
+    $('.dd-description').each(function(i, elem) {
+      if(value[i] != 'Rarity'){
+        stat[i] = $(this).text();
+      } else {
+        stat[i] = $(this).text().substring(0, $(this).text().length - 2) + "*";
+      }
+    });
+    $('.tooltip').each(function(i, elem){
+        value1[i] = parsestat($(this).html());
+    })
+    for(var i = 0; i < 2; i++){
+        a = a + ' \n' + value[i] + ': ' + stat[i];
+    }
+    a = a + ' \n' + 'Base Min Might: ' + value1[0]
+    a = a + ' \n' + 'Base Max Might: ' + value1[1]
+    for(var i = 2; i < value.length; i++){
+        a = a + ' \n' + value[i] + ': ' + stat[i];
+    }
+    if(a != ''){
+      msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + ' \n' + a);
+    } else {
+      msg.channel.send('Could not find stat data for: ' + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
+    }
+    console.log(a)
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+//return 'Data not found';
+}
+
 function parseit(param){
   var regex = /(.*)Icon Rarity Row (\d*)\.png(.*)/i
   let matches = param.match(regex)
@@ -194,6 +251,12 @@ function parseclass(param){
 }
 
 function parsenotevent(param){
+  var regex = /(.*)href=\"\/(\S*)\"(.*)/i
+  let matches = param.match(regex)
+  return matches[2];
+}
+
+function parsewyrm(param){
   var regex = /(.*)href=\"\/(\S*)\"(.*)/i
   let matches = param.match(regex)
   return matches[2];
