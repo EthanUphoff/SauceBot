@@ -26,7 +26,7 @@ bot.on('message', function(msg) {
     return;
   }
   if(msg.content === prefix + "help"){
-    msg.channel.send("Type s?character <character>, s?dragon <dragon>, or s?wyrm <wyrmprint> accordingly")
+    msg.channel.send("Type s?character <(optional) stats/coability/abilities> <character>, s?dragon <dragon>, or s?wyrm <wyrmprint> accordingly")
     return;
   }
   if(command.includes("sierra")){
@@ -43,6 +43,42 @@ bot.on('message', function(msg) {
   }
   if(command.includes("character")){
     var nochar = msg.content.slice(12);
+    if(nochar.includes("skill") || nochar.includes("skills")){
+        if(nochar.includes("skills")){
+          nochar = nochar.slice(7);
+        } else {
+          nochar = nochar.slice(6);
+        }
+        characterskill(msg, nochar)
+        return;
+      }
+    if(nochar.includes("co-ability") || nochar.includes("coability")){
+        if(nochar.includes("co-ability")){
+          nochar = nochar.slice(11);
+        } else {
+          nochar = nochar.slice(10);
+        }
+        charactercoability(msg, nochar)
+        return;
+      }
+    if(nochar.includes("abilities") || nochar.includes("ability")){
+        if(nochar.includes("abilities")){
+          nochar = nochar.slice(10);
+        } else {
+          nochar = nochar.slice(8);
+        }
+        characterabilities(msg, nochar)
+        return;
+      }
+    if(nochar.includes("stat") || nochar.includes("stats")){
+        if(nochar.includes("stats")){
+          nochar = nochar.slice(6);
+        } else {
+          nochar = nochar.slice(5);
+        }
+        characters(msg, nochar)
+        return;
+      }
   if(command != ''){
       characters(msg, nochar)
       return;
@@ -159,6 +195,11 @@ rp(options)
         value[i] = parsestat($(this).html());
       }
     })
+    $('th').each(function(i, elem){
+        value2[i] = $(this).text().replace('\n', '').slice(2)//parsedragon($(this).html())// + ':';
+        //value3[i] = console.log($(this).html().replace(" ", ""));//parsesability($(this).html()));
+        //value3[i] = parsedragonability($(this).html());
+    })
     $('.dt-term').each(function(i, elem) {
         value1[i] = $(this).text();
     });
@@ -191,6 +232,46 @@ rp(options)
     for(var i = 1; i < value1.length; i++){
         a = a + ' \n' + value1[i] + ': ' + stat[i];
     }
+    /*var x = 1;
+    a = a + ' \n\n' + '**Skills**'
+    a = a + ' \n' + value2[0] + ':';
+    for(var i = 7; i < 10; i++){
+        a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+        x++
+    }
+    a = a + ' \n' + value2[1] + ':';
+    x = 1
+    for(var i = 10; i < 12; i++){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+      x++
+    }
+    a = a + ' \n\n' + '**Co-Abilities**'
+    a = a + ' \n' + value2[2] + ':';
+    x = 1
+    for(var i = 13; i < 18; i++){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+      x++
+    }
+    a = a + ' \n\n' + '**Abilities**'
+    a = a + ' \n' + value2[3] + ':';
+    x = 1
+    for(var i = 19; i < 21; i++){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+      x++
+    }
+    a = a + ' \n' + value2[4] + ':';
+    x = 1
+    for(var i = 21; i < 23; i++){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+      x++
+    }
+    a = a + ' \n' + value2[5] + ':';
+    x = 1
+    a = a + ' \n' + 'Level ' + x + ': ' + p[23]
+    x++
+    if(p[24].charAt(p[24].length) != " "){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[24]
+    }*/
     if(a != ''){
       msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + ' \n\n' + '**Stats**' + a);
     } else {
@@ -198,7 +279,316 @@ rp(options)
     }
   })
   .catch((err) => {
-    console.log(err);
+    msg.channel.send('Could not find skill data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
+  });
+
+//return 'Data not found';
+}
+
+function characterskill(msg, h){
+
+const options = {
+  uri: `https://dragalialost.gamepedia.com/` + h,
+  transform: function (body) {
+    return cheerio.load(body);
+  }
+};
+
+rp(options)
+  .then(($) => {
+    var value = []
+    var value1 = []
+    var value2 = []
+    var stat = []
+    var a = ''
+    var p = []
+    $('p').each(function(i, elem) {
+        p[i] = $(this).text();
+    });
+    if(p[0] == "There is currently no text in this page."){
+      msg.channel.send('Could not find character: ' + h + ' (Note: wyrmprints are case sensitive)' )
+      return;
+    }
+    //$('.dt-term').each(function(i, elem) {
+        //value[i] = $(this).text();
+    //});
+    $('.tooltip').each(function(i, elem){
+      if(i % 2 == 0 && i < 4){
+        value[i] = parsething($(this).html());
+      } else if(i < 4){
+        value[i] = parsestat($(this).html());
+      } else if(i < 6){
+        value[i] = parsestat($(this).html());
+      }
+    })
+    $('th').each(function(i, elem){
+        value2[i] = $(this).text().replace('\n', '').slice(2)//parsedragon($(this).html())// + ':';
+        //value3[i] = console.log($(this).html().replace(" ", ""));//parsesability($(this).html()));
+        //value3[i] = parsedragonability($(this).html());
+    })
+    $('.dt-term').each(function(i, elem) {
+        value1[i] = $(this).text();
+    });
+    $('.dd-description').each(function(i, elem) {
+      if(value1[i] != 'Class' && value1[i] != 'Base Rarity'){
+        stat[i] = $(this).text();
+      } else if(value1[i] == 'Class') {
+        stat[i] = parseclass($(this).html());
+      } else {
+        stat[i] = parseit($(this).html())
+      }
+    });
+    try{
+    a = a + ' \n' + value[0] + ': ' + value[1].substring(0, value[1].length - 1) + ' With Maxed Mana Circle)' + ' \n' + value[2] + ': ' + value[3].substring(0, value[3].length - 1) + ' With Maxed Mana Circle)'
+    a = a + ' \n' + value1[0] + ': ' + stat[0]
+    a = a + ' \n' + 'Base Min Might: ' + value[4]
+    a = a + ' \n' + 'Base Max Might: ' + value[5]
+    }
+    catch(err){
+      var backedup = [];
+      var backedupa = '';
+      //msg.channel.send("Fuck you go to the wiki: " + "https://dragalialost.gamepedia.com/" + h.slice(1))
+      $('li').each(function(i, elem){
+        backedup[i] = $(this).html();
+      })
+      var backedupa = parsenotevent(backedup[backedup.length - 71])
+      characters(msg, backedupa)
+      return;
+    }
+    var x = 1;
+    a = ' \n\n' + '**Skills**'
+    a = a + ' \n' + value2[0] + ':';
+    for(var i = 7; i < 10; i++){
+        a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+        x++
+    }
+    a = a + ' \n' + value2[1] + ':';
+    x = 1
+    for(var i = 10; i < 12; i++){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+      x++
+    }
+    if(a != ''){
+      msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + a);
+    } else {
+      msg.channel.send('Could not find skill data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
+    }
+  })
+  .catch((err) => {
+    msg.channel.send('Could not find skill data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
+  });
+
+//return 'Data not found';
+}
+
+function charactercoability(msg, h){
+
+const options = {
+  uri: `https://dragalialost.gamepedia.com/` + h,
+  transform: function (body) {
+    return cheerio.load(body);
+  }
+};
+
+rp(options)
+  .then(($) => {
+    var value = []
+    var value1 = []
+    var value2 = []
+    var stat = []
+    var a = ''
+    var p = []
+    $('p').each(function(i, elem) {
+        p[i] = $(this).text();
+    });
+    if(p[0] == "There is currently no text in this page."){
+      msg.channel.send('Could not find character: ' + h + ' (Note: wyrmprints are case sensitive)' )
+      return;
+    }
+    //$('.dt-term').each(function(i, elem) {
+        //value[i] = $(this).text();
+    //});
+    $('.tooltip').each(function(i, elem){
+      if(i % 2 == 0 && i < 4){
+        value[i] = parsething($(this).html());
+      } else if(i < 4){
+        value[i] = parsestat($(this).html());
+      } else if(i < 6){
+        value[i] = parsestat($(this).html());
+      }
+    })
+    $('th').each(function(i, elem){
+        value2[i] = $(this).text().replace('\n', '').slice(2)//parsedragon($(this).html())// + ':';
+        //value3[i] = console.log($(this).html().replace(" ", ""));//parsesability($(this).html()));
+        //value3[i] = parsedragonability($(this).html());
+    })
+    $('.dt-term').each(function(i, elem) {
+        value1[i] = $(this).text();
+    });
+    $('.dd-description').each(function(i, elem) {
+      if(value1[i] != 'Class' && value1[i] != 'Base Rarity'){
+        stat[i] = $(this).text();
+      } else if(value1[i] == 'Class') {
+        stat[i] = parseclass($(this).html());
+      } else {
+        stat[i] = parseit($(this).html())
+      }
+    });
+    try{
+    a = a + ' \n' + value[0] + ': ' + value[1].substring(0, value[1].length - 1) + ' With Maxed Mana Circle)' + ' \n' + value[2] + ': ' + value[3].substring(0, value[3].length - 1) + ' With Maxed Mana Circle)'
+    a = a + ' \n' + value1[0] + ': ' + stat[0]
+    a = a + ' \n' + 'Base Min Might: ' + value[4]
+    a = a + ' \n' + 'Base Max Might: ' + value[5]
+    }
+    catch(err){
+      var backedup = [];
+      var backedupa = '';
+      //msg.channel.send("Fuck you go to the wiki: " + "https://dragalialost.gamepedia.com/" + h.slice(1))
+      $('li').each(function(i, elem){
+        backedup[i] = $(this).html();
+      })
+      var backedupa = parsenotevent(backedup[backedup.length - 71])
+      characters(msg, backedupa)
+      return;
+    }
+    a = ' \n\n' + '**Co-Abilities**'
+    a = a + ' \n' + value2[2] + ':';
+    x = 1
+    for(var i = 13; i < 18; i++){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+      x++
+    }
+    /*a = a + ' \n\n' + '**Abilities**'
+    a = a + ' \n' + value2[3] + ':';
+    x = 1
+    for(var i = 19; i < 21; i++){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+      x++
+    }
+    a = a + ' \n' + value2[4] + ':';
+    x = 1
+    for(var i = 21; i < 23; i++){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+      x++
+    }
+    a = a + ' \n' + value2[5] + ':';
+    x = 1
+    a = a + ' \n' + 'Level ' + x + ': ' + p[23]
+    x++
+    if(p[24].charAt(p[24].length) != " "){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[24]
+    }*/
+    if(a != ''){
+      msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + a);
+    } else {
+      msg.channel.send('Could not find stat data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
+    }
+  })
+  .catch((err) => {
+    msg.channel.send('Could not find skill data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
+  });
+
+//return 'Data not found';
+}
+
+function characterabilities(msg, h){
+
+const options = {
+  uri: `https://dragalialost.gamepedia.com/` + h,
+  transform: function (body) {
+    return cheerio.load(body);
+  }
+};
+
+rp(options)
+  .then(($) => {
+    var value = []
+    var value1 = []
+    var value2 = []
+    var stat = []
+    var a = ''
+    var p = []
+    $('p').each(function(i, elem) {
+        p[i] = $(this).text();
+    });
+    if(p[0] == "There is currently no text in this page."){
+      msg.channel.send('Could not find character: ' + h + ' (Note: wyrmprints are case sensitive)' )
+      return;
+    }
+    //$('.dt-term').each(function(i, elem) {
+        //value[i] = $(this).text();
+    //});
+    $('.tooltip').each(function(i, elem){
+      if(i % 2 == 0 && i < 4){
+        value[i] = parsething($(this).html());
+      } else if(i < 4){
+        value[i] = parsestat($(this).html());
+      } else if(i < 6){
+        value[i] = parsestat($(this).html());
+      }
+    })
+    $('th').each(function(i, elem){
+        value2[i] = $(this).text().replace('\n', '').slice(2)//parsedragon($(this).html())// + ':';
+        //value3[i] = console.log($(this).html().replace(" ", ""));//parsesability($(this).html()));
+        //value3[i] = parsedragonability($(this).html());
+    })
+    $('.dt-term').each(function(i, elem) {
+        value1[i] = $(this).text();
+    });
+    $('.dd-description').each(function(i, elem) {
+      if(value1[i] != 'Class' && value1[i] != 'Base Rarity'){
+        stat[i] = $(this).text();
+      } else if(value1[i] == 'Class') {
+        stat[i] = parseclass($(this).html());
+      } else {
+        stat[i] = parseit($(this).html())
+      }
+    });
+    try{
+    a = a + ' \n' + value[0] + ': ' + value[1].substring(0, value[1].length - 1) + ' With Maxed Mana Circle)' + ' \n' + value[2] + ': ' + value[3].substring(0, value[3].length - 1) + ' With Maxed Mana Circle)'
+    a = a + ' \n' + value1[0] + ': ' + stat[0]
+    a = a + ' \n' + 'Base Min Might: ' + value[4]
+    a = a + ' \n' + 'Base Max Might: ' + value[5]
+    }
+    catch(err){
+      var backedup = [];
+      var backedupa = '';
+      //msg.channel.send("Fuck you go to the wiki: " + "https://dragalialost.gamepedia.com/" + h.slice(1))
+      $('li').each(function(i, elem){
+        backedup[i] = $(this).html();
+      })
+      var backedupa = parsenotevent(backedup[backedup.length - 71])
+      characters(msg, backedupa)
+      return;
+    }
+    a = a + ' \n\n' + '**Abilities**'
+    a = a + ' \n' + value2[3] + ':';
+    x = 1
+    for(var i = 19; i < 21; i++){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+      x++
+    }
+    a = a + ' \n' + value2[4] + ':';
+    x = 1
+    for(var i = 21; i < 23; i++){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[i]
+      x++
+    }
+    a = a + ' \n' + value2[5] + ':';
+    x = 1
+    a = a + ' \n' + 'Level ' + x + ': ' + p[23]
+    x++
+    if(p[24].charAt(p[24].length) != " "){
+      a = a + ' \n' + 'Level ' + x + ': ' + p[24]
+    }
+    if(a != ''){
+      msg.channel.send(h.charAt(0).toUpperCase() + h.slice(1) + a);
+    } else {
+      msg.channel.send('Could not find stat data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
+    }
+  })
+  .catch((err) => {
+    msg.channel.send('Could not find skill data for: ' + h.slice(1) + h.charAt(0).toUpperCase() + h.slice(1) + ' \n')
   });
 
 //return 'Data not found';
