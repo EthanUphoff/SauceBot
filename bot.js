@@ -231,7 +231,7 @@ rp(options)
         a = a + ' \n' + value[i] + ': ' + stat[i];
     }
     $('table').each(function(i, elem){
-        value2[i] = parsenotevent($(this).html()) + ':';
+        value2[i] = parsewyrm($(this).html().replace('/em', '/a')) + ':';
         //value3[i] = console.log($(this).html().replace(" ", ""));//parsesability($(this).html()));
         value3[i] = parsesability($(this).html());
     })
@@ -283,15 +283,23 @@ function parsenotevent(param){
 }
 
 function parsewyrm(param){
-  var regex = /(.*)href=\"\/(\S*)\"(.*)/i
+  var regex = /(.*)\>((\w*\d*[%\.]* \w*)*)\<\/(.*)/i
   let matches = param.match(regex)
   return matches[2];
 }
 
 function parsesability(param){
-  var regex = /(.*)\<p\>((\w*\d*[%\.]* )*)(.*)Might\:\<\/span\> (\d*)(.*)/i//((.|\n)*)(.*)(\S*)/s//((\w*\d*[%\.]* )*)(.*)Might\:\<\/span\> (\d*)(.*)/i//(\S+ )*\. (.*) Might\: <\/span> (\d+)(.*)/i
+  //var regex = /(.*)\<p\>((\w*\d*[%\.\/]*\w* )*)(.*)Might\:\<\/span\> (\d*)(.*)/i//((.|\n)*)(.*)(\S*)/s//((\w*\d*[%\.]* )*)(.*)Might\:\<\/span\> (\d*)(.*)/i//(\S+ )*\. (.*) Might\: <\/span> (\d+)(.*)/i
   var regex1 = /(.*)\<p\>((\w*\d*[%\.]* )*)(.*)Might\:\<\/span\> (\d*)(.*)/s
+  var regex = /\<p\>(\S*)\<\/p\>(.*)/i
+  //var regex = /(.*)/s
   let matches1 = param.match(regex)
+  //return matches1[0];
   let matches2 = param.match(regex1)
-  return 'Level 1: ' + matches1[2] + '(Might: ' + matches1[5] + ')' + '\n' + 'Level 2: ' + matches2[2] + '(Might: ' + matches2[5] + ')';
+  if(!matches1){
+    regex = /(.*)\<p\>((\w*\d*[%\.\/]*\w* )*)(.*)Might\:\<\/span\> (\d*)(.*)/i
+    matches1 = param.match(regex)
+    return 'Level 1: ' + matches1[2] + ' (Might: ' + matches1[5] + ')' + '\n' + 'Level 2: ' + matches2[2] + '(Might: ' + matches2[5] + ')';
+  }
+  return 'Level 1: ' + matches1[1] + '\n' + 'Level 2: ' + matches2[2] + '(Might: ' + matches2[5] + ')';
 }
