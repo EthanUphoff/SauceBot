@@ -561,7 +561,7 @@ rp(options)
       characters(msg, backedupa)
       return;
     }
-    a = a + ' \n\n' + '**Abilities**'
+    a = ' \n\n' + '**Abilities**'
     a = a + ' \n' + value2[3] + ':';
     x = 1
     for(var i = 19; i < 21; i++){
