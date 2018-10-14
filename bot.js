@@ -6,7 +6,7 @@ let axios = require('axios');
 
 var prefix = "s?"
 
-bot.login('')
+bot.login('NTAwODU1Mjk4MDI2NzY2MzQ2.DqQ5jQ.3E3AeUiDB8o1rLVF4EXo0jTC4NA')
 
 bot.on('ready', function(){
   console.log('The bot is online!')
@@ -103,7 +103,7 @@ rp(options)
     //for(var i = 0; i < value2.length; i++){
       //a = a + ' \n' + value2[i] + '\n' + value3[i];
     //}
-    for(var i = 1; i < value.length; i++){
+    for(var i = 0; i < value.length; i++){
         a = a + ' \n' + value[i] + ': ' + stat[i];
     }
     a = a + ' \n\n' + '**Skills**'
